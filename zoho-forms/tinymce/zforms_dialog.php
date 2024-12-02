@@ -179,9 +179,6 @@ require_once dirname(__FILE__).'/../zforms_config.php';
 				</div>
 			</div>
 		</div>
-			<div class="zf-WpBranding"> 
-				<img src="zohobranding.jpg">
-			</div>
 		</div>
 					
 	</body>

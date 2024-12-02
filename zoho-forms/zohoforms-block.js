@@ -555,33 +555,6 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 						 				wpCreateElem("p", { id: "permaLinkError", style: {display:'none'} },"Please enter your form's permalink URL."),
 						 				wpCreateElem("span",null,"Not sure where to find the permalink URL? ",wpCreateElem("a",{href: "https://www.zoho.com/forms/help/share/public-sharing.html#link", target: "_blank"},"Click here "),wpCreateElem("span",null,"to learn more."))
 									),);
-		var brandingFotter = wpCreateElem("div",
-								{
-									class:"zf-wb-brandWrapper"
-								},
-								wpCreateElem("div",
-									{
-										class:"flRight zf-wb-brandCont"
-									},
-									wpCreateElem("span",
-										{
-											class:"flLeft"
-										},
-										"Powered by"
-									),
-									wpCreateElem("img",
-										{
-											src: zohoFormsBlock.footerIcon,
-											alt: "Zoho",
-											class:"flLeft",
-											style: {
-												height: "20px"
-											}
-										}
-									)
-								),
-								wpCreateElem("div",{class:"clearBoth"})
-							);
 		var embedTypeDIv = wpCreateElem("div", {
 								  class: "cusRadioButton",
 								  id: "embedTypeDiv"
@@ -799,8 +772,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 	  				permaLinkEmbedDiv,
 	  				chooseZFormDiv,
 	  				embedActionDiv,
-	  				wpCreateElem("div", { id: "blockEditShortCodeDiv"} ),
-	  				brandingFotter
+	  				wpCreateElem("div", { id: "blockEditShortCodeDiv"} )
   				);
   	},
   	save:function(props){

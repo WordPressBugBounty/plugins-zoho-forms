@@ -3,8 +3,8 @@
 /*
 Plugin Name:Zoho Forms 
 Plugin URI: http://wordpress.org/extend/plugins/zohoforms
-Description: Embed forms just about anywhere on your WordPress website. Concentrate on just your content and let us take care of the coding for you.
-Version: 4.0.2
+Description: Try Zoho Forms, the best WordPress contact form plugin! Create contact, payment & custom forms with a drag and drop builder. Get started for free!
+Version: 4.0.3
 Author: Zoho Forms
 Author URI: https://forms.zoho.com
 */
@@ -127,8 +127,7 @@ function loadZohoFormsBlockFiles() {
   );
   wp_localize_script( 'zoho-forms-block-js', 'zohoFormsBlock', array(
       'blockCSS' => plugin_dir_url(__FILE__) . 'zohoforms-block.css',
-      'favIconPath' => plugin_dir_url(__FILE__) . 'tinymce/zFormsIcon.png',
-      'footerIcon' => plugin_dir_url(__FILE__) . 'tinymce/zoho-logo.png'
+      'favIconPath' => plugin_dir_url(__FILE__) . 'tinymce/zFormsIcon.png'
     ) );
 }
 

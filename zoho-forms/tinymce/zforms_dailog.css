@@ -81,17 +81,6 @@ box-sizing: border-box;
     width: 45px;
     margin-bottom: 5px;
 }
-.zf-WpBranding img{
-    width: 30%;
-}
-
-.zf-WpBranding {
-    padding: 0 15px 5px;
-text-align: right;
-display: inline-block;
-width: 100%;
-box-sizing: border-box;
-}
 
 /* Second Screen */
 
@@ -370,9 +359,6 @@ input:focus, textarea:focus, select:focus{ outline: none; border-color: #24A68A 
     padding: 10px 35px;
     display: inline-block;
 }
-.zf-wpFooter .zf-WpBranding {
-    margin: 15px 0 0;
-} 
 .zf-WpEmbeddedWrap  {
     padding: 0 25px;
 } 
