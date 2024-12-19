@@ -90,7 +90,7 @@ function getForms()
 
 function zforms_submit()
 {
-	var src='';
+	var src='', formTitle = '';
 	var embedType = $("#zf_embedCatogory").val();
 	if(embedType == "formPerma"){
 		var perma_link = document.getElementById("permalink").value;
@@ -112,6 +112,7 @@ function zforms_submit()
 			return;
 		}
 		src = formName;
+		formTitle = $("#formname").find(":selected").text();
 	}
 	
 		var urlParams = '';
@@ -151,6 +152,15 @@ function zforms_submit()
 		//insertContent(urlBuild,formWidth.value,formHeight.value);
 		var tag = '[zohoForms src=';
 		tag += src;
+		if(formTitle != '') {
+			/* 
+				When single or double quotes are present in form title, it will be removed. 
+				Since encoding value when inserted in tinyMCE editor, get converted to actual string and aria label gets broken when page is previewed. 
+				In block editor, value is encoded and saved in shortcode. 
+			*/
+			var escapedFormTitle = formTitle.replace(/['"]/g, ''); 
+			tag += ' formtitle=\'' + escapedFormTitle + '\'';
+		}
 		tag += ' width=';
 		tag += formWidth.value;
 		tag += ' height=';

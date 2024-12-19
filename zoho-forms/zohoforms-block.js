@@ -3,8 +3,8 @@
 var wpElem = wp.element;
 var wpCreateElem = wpElem.createElement;
 var favIcon = wpCreateElem("img", {
-  src: zohoFormsBlock.favIconPath,
-  alt: "Zoho Forms"
+  	src: zohoFormsBlock.favIconPath,
+  	alt: "Zoho Forms"
 });
 var backSvgIcon = wpCreateElem('svg', null,
     wpCreateElem('path', { d: "M21 11.016v1.969h-14.156l3.563 3.609-1.406 1.406-6-6 6-6 1.406 1.406-3.563 3.609h14.156z"} )
@@ -43,18 +43,17 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
     	height: {type: 'string'},
     	width: {type: 'string'},
     	type: {type: 'string'},
+    	formtitle: {type : 'string'},
     	autoheight: {type: 'boolean'},
   	},
-  	edit:function (props){
-  		//if form already embed 
+  	edit:function (props){ //Any edit or onclick of zohoforms block on editor, this edit function will be called.
+  		/*
+  			1. If form is already embedded using zohoform block, then iframe will be constructed and returned.
+  			2. Else, embed popup will be created with createElement function and returned at end of edit function. 
+		*/
   		var zformsShortCode = props.attributes.zf_short_code;
   		if(zformsShortCode !=undefined && zformsShortCode.length!=0){
-  			return wpCreateElem("div", 
-  						null,
-  						wpCreateElem("iframe",
-  							{allowtransparency: "true",scrolling: "auto",src: props.attributes.formPerma,width: props.attributes.width,height: props.attributes.height,frameborder:"0"}
-  						)
-  					)
+  			return wpCreateElem("div", null, wpCreateElem("iframe", {src: props.attributes.formPerma, width: props.attributes.width, height: props.attributes.height, frameborder:"0", allow : "geolocation;microphone;camera", "aria-label" : props.attributes.formtitle}));
   		}
 		var $ = jQuery;
   		//to go to home 
@@ -83,9 +82,9 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   				$("#embedActionsDiv").hide();
   			}
   		}
-  		//embed form threw perma URL
+  		//This function will be called on clicking embed button after choosing form details.
   		function zf_block_embed(){
-  			var formPerma='';
+  			var formPerma='', formTitle = '';
   			if($("#embedCatogory").val()=="formPerma"){
 	  			formPerma = $("#permalink").val();
 	  			if(formPerma.length==0){
@@ -102,6 +101,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 	  				$(formSelectError).show();
 	  				return;
 	  			}
+	  			formTitle = $("#zf_formslist").find(":selected").text();
   			}
   			var height = $("#formHeight").val();
   			var width = $("#formWidth").val();
@@ -143,7 +143,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 					return;
 				}
 			}
-  			saveShortCode(formPerma,width,height,embedType,autoHeight,urlParams);
+  			saveShortCode(formPerma,width,height,embedType,autoHeight,urlParams, formTitle);
   		}
   		//form select error
   		function hideFormSelectError(){
@@ -151,7 +151,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   			$(formSelectError).parent().removeClass("zf-wb-errorCont");
   			$(formSelectError).hide();
   		}
-  		//embed form threw selecting from list
+  		/*embed form threw selecting from list
   		function zf_choose_form_embed(){
   			var formPerma = $("#zf_formslist").val();
   			if(formPerma.length==0 || formPerma =="-select-"){
@@ -177,17 +177,20 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 				autoHeight =true;
 			}
   			saveShortCode(formPerma,width,height,embedType,autoHeight);
-  		}
+  		}*/
+
   		//saving shotcode and rendering the form
-  		function saveShortCode(formPerma,width,height,embedType,autoHeight,urlParams){
-  			var shortCode="[zohoForms src="+formPerma+" width="+width+" height="+height+" type="+embedType+" autoheight="+autoHeight+" urlparams="+urlParams+" /]";
-  			var iframe = wpCreateElem("iframe",{allowtransparency: "true",scrolling: "auto",src: formPerma,width: width,height: height,frameborder:"0"});
+  		function saveShortCode(formPerma,width,height,embedType,autoHeight,urlParams, formTitle){
+  			var escapedFormTitle = formTitle.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+  			var shortCode="[zohoForms formtitle='" + escapedFormTitle + "' src="+formPerma+" width="+width+" height="+height+" type="+embedType+" autoheight="+autoHeight+" urlparams="+urlParams+" /]";
+  			var iframe = wpCreateElem("iframe",{src: formPerma,width: width,height: height,frameborder:"0"});
   			props.setAttributes({zf_short_code:shortCode});
   			props.setAttributes({formPerma:formPerma});
   			props.setAttributes({height:height});
   			props.setAttributes({width:width});
   			props.setAttributes({type:embedType});
   			props.setAttributes({autoheight:autoHeight});
+  			props.setAttributes({formtitle:formTitle});
   			$("#formPermaLinkPasteDiv").hide();
   			$("#blockEditShortCodeDiv").html(iframe);
   			$("#blockEditShortCodeDiv").show();
@@ -379,7 +382,9 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   				$("#zfRefreshDiv").show();
   			}
   		}
-  		//creating html elements
+  		/*
+  			When form is not embedded already, popup will be constructed with createElement function and then returned finally at end of edit function.
+		*/
   		var domainDropDownElem = wpCreateElem("div",
 		    						{
 		      							id: "zDomaindiv",
@@ -774,13 +779,8 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 	  				embedActionDiv,
 	  				wpCreateElem("div", { id: "blockEditShortCodeDiv"} )
   				);
-  	},
+  	}, //End of edit function
   	save:function(props){
-  		return wpCreateElem(
-  			"div", 
-  			null,
-  			props.attributes.zf_short_code
-  		)
-  		
-  	}
+  		return wpCreateElem("div", null, props.attributes.zf_short_code)
+  	} //End of save function
 })

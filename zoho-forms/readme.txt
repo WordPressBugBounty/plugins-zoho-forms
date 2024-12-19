@@ -29,9 +29,9 @@ Zoho Forms offers a [free forever](https://www.zoho.com/forms/free-forms.html?sr
 
 = Zoho Forms Features List = 
 
-* [Drag-and-Drop Form Builder](https://www.zoho.com/forms/online-form-maker.html#fb-drag) to build your forms with no coding skills!
+* [Drag-and-Drop Form Builder](https://www.zoho.com/forms/drag-and-drop-form-builder.html) to build your forms with no coding skills!
 * [Pre-built Templates](https://www.zoho.com/forms/templates.html?src=wordpress_plugin) that are customizable to save time on form creation.
-* [Conditional Rules & Formula Fields](https://www.zoho.com/forms/online-form-maker.html#fb-logic) for smart dynamic forms that perform advanced calculations.
+* [Conditional Rules & Formula Fields](https://www.zoho.com/forms/conditional-logic.html) for smart dynamic forms that perform advanced calculations.
 * [Direct Integrations](https://www.zoho.com/forms/integrations.html) with Zoho CRM, Salesforce, Mailchimp, Zoho Campaigns, Zoho SalesIQ, and more to automate your workflows.
 * [Integrated Payment Gateways](https://www.zoho.com/forms/payment-order-forms.html#gateway) to accept payments through your forms via gateways like PayPal, Stripe, Razorpay, Paytm, and more.
 * [Security & Compliance](https://www.zoho.com/forms/secure-forms.html#ssl) offering encryption, SSL, GDPR, HIPAA, and WCAG compliance.
@@ -103,7 +103,7 @@ Zoho Forms offers a [free forever](https://www.zoho.com/forms/free-forms.html?sr
 * [CAPTCHA](https://help.zoho.com/portal/en/kb/forms/form-settings/privacy-features/captcha/articles/spam-control): Safeguard your forms from spammers and bots with Zoho Forms' built-in CAPTCHA, and Google CAPTCHA.
 * [Spam Control](https://help.zoho.com/portal/en/kb/forms/form-settings/privacy-features): Limit submissions to one submission per IP address or device, OTP verification to access form, double opt-in to confirm form submissions, and more. 
 * [256-bit SSL Encryption](https://www.zoho.com/forms/secure-forms.html#ssl): Ensure secure data transmission with Zoho Forms' 256-bit SSL (Secure Socket Layer) encryption, providing a SHA256 certificate for added protection.
-* [Form Encryption](https://www.zoho.com/forms/secure-forms.html#field-encryption): Encrypt your form fields, securing submission data, ensuring maximum privacy and security.
+* [Field Encryption](https://www.zoho.com/forms/secure-forms.html#field-encryption): Encrypt your form fields, securing submission data, ensuring maximum privacy and security.
 * [GDPR Compliance](https://help.zoho.com/portal/en/kb/forms/form-settings/compliance-audit/gdpr/articles/privacy-gdpr-compliance): Stay fully compliant with the EU's General Data Protection Regulation (GDPR), ensuring your data collection practices meet the stringent privacy standards required for businesses in Europe.
 * [WCAG 2.2 AA Compliance](https://help.zoho.com/portal/en/kb/forms/form-settings/compliance-audit/accessibility/articles/accessibility): Adhere to Web Content Accessibility Guidelines (WCAG), ensuring your forms are accessible to all users, including those with disabilities. 
 * [HIPAA Compliance](https://help.zoho.com/portal/en/kb/forms/form-settings/compliance-audit/hipaa/articles/hipaa-compliance-in-zoho-forms): Securely collect and store sensitive patient health data using Zoho Forms’ HIPAA-compliant features, with a Business Associate Agreement (BAA) available upon request to meet healthcare data protection needs.
@@ -142,7 +142,7 @@ Zoho Forms plugins are compatible with both the block editor and the classic edi
 1. To add a shortcode block to your Wordpress page, simply click the <strong>+ (Block Inserter)</strong> icon in the top left corner of your screen. In the search bar ,type <strong>Shortcode</strong> and select the block from the search results.
 2. You can then use the following shortcode format to embed your Zoho Form on your website. 
 
-> [zohoForms src=<permalink> width=100% height=600px urlparams=”” type=<js/iframe> autoheight=<true/false>]
+= [zohoForms src=<Form Permalink URL> width=100% height=600px urlparams=”” type=<js/iframe> autoheight=<true/false>] = 
 
 [Click here](https://help.zoho.com/portal/en/kb/forms/embedding-forms/embedding-forms-on-website-builders/articles/embedding-forms-on-a-wordpress-website#Embed_using_Short_Code) to learn more about appropriate shortcode formats.
 
@@ -229,9 +229,13 @@ To customize the appearance of your form on a WordPress page, go to the Themes t
 
 == Changelog ==
 
+= 4.0.4 =
+
+* Enhanced iframe and JavaScript code of forms with required browser permissions and WCAG attributes.
+
 = 4.0.3 =
 
-* Enhancement added.
+* Minor enhancements and tested with wordpress version 6.7.1
 
 = 4.0.2 =
 
@@ -283,6 +287,6 @@ To customize the appearance of your form on a WordPress page, go to the Themes t
 
 == Upgrade Notice ==
 
-= 4.0.3 =
+= 4.0.4 =
 
-* Enhancement added.
+* Enhanced iframe and JavaScript code of forms with required browser permissions and WCAG attributes.
