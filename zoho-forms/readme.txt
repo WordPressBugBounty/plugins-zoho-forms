@@ -4,7 +4,7 @@ Contributors: zoho
 Donate link: https://www.zoho.com/
 Tags: contact form, form builder, custom form, forms, form plugin
 Requires at least: 2.8
-Tested up to: 6.7.1
+Tested up to: 6.8.2
 Stable tag: 4.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
