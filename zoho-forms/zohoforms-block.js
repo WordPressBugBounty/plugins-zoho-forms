@@ -9,64 +9,77 @@ var favIcon = wpCreateElem("img", {
 var backSvgIcon = wpCreateElem('svg', null,
     wpCreateElem('path', { d: "M21 11.016v1.969h-14.156l3.563 3.609-1.406 1.406-6-6 6-6 1.406 1.406-3.563 3.609h14.156z"} )
     );
-function deleteParam(elem){
-	jQuery(elem).parent().parent("div").remove();
-	var urlParamsDiv = jQuery("#urlParamsDiv");
-	var paramsDiv = jQuery(urlParamsDiv).find("div[elname=paramsDiv]");
-	var parmsCount = jQuery(paramsDiv).find("div[eltype=keyValPair]").length;
-	if(parmsCount == 0){
-		jQuery("#queryParamsCB").prop("checked",false);
-		jQuery("#urlParamsDiv").slideUp();
-	}
-}
-function addNewParam(elem){
-			var urlParamsDiv = jQuery("#urlParamsDiv");
-			var newParam = jQuery(urlParamsDiv).find("div[elname=paramTemplate]").clone();
-			jQuery(newParam).removeAttr("elname");
-			jQuery(newParam).show();
-			jQuery(newParam).find("input[elname=paramKey]").attr("onChange","hideparamError(this)");
-			jQuery(newParam).find("span[elname=deleteParam]").attr("onclick","deleteParam(this)");
-			jQuery(newParam).find("span[elname=addParam]").attr("onclick","addNewParam(this)");
-			jQuery(newParam).insertAfter(jQuery(elem).parent().parent("div[eltype=keyValPair]"));
-}
-function hideparamError(elem){
-	jQuery(elem).parent("div").removeClass("zf-wb-errorCont");
-	jQuery("#paramError").hide();
-}
+var zohoFormsAttributes = {
+	zf_short_code: {type: 'string'},
+	formPerma: {type: 'string'},
+	height: {type: 'string'},
+	width: {type: 'string'},
+	type: {type: 'string'},
+	formtitle: {type : 'string'},
+	autoheight: {type: 'boolean'},
+};
 wp.blocks.registerBlockType('zoho/zoho-forms',{
+	apiVersion: 3,
 	title: 'Zoho Forms',
   	icon: favIcon,
   	category: 'embed',
-  	attributes: {
-    	zf_short_code: {type: 'string'},
-    	formPerma: {type: 'string'},
-    	height: {type: 'string'},
-    	width: {type: 'string'},
-    	type: {type: 'string'},
-    	formtitle: {type : 'string'},
-    	autoheight: {type: 'boolean'},
-  	},
+  	attributes: zohoFormsAttributes,
   	edit:function (props){ //Any edit or onclick of zohoforms block on editor, this edit function will be called.
   		/*
   			1. If form is already embedded using zohoform block, then iframe will be constructed and returned.
   			2. Else, embed popup will be created with createElement function and returned at end of edit function. 
 		*/
   		var zformsShortCode = props.attributes.zf_short_code;
-  		if(zformsShortCode !=undefined && zformsShortCode.length!=0){
-  			return wpCreateElem("div", null, wpCreateElem("iframe", {src: props.attributes.formPerma, width: props.attributes.width, height: props.attributes.height, frameborder:"0", allow : "geolocation;microphone;camera", "aria-label" : props.attributes.formtitle}));
+  		var isEmbedded = zformsShortCode !=undefined && zformsShortCode.length!=0;
+  		// The block renders inside the editor iframe, so DOM lookups must be scoped to this block's element, not the admin document.
+  		var blockRef = wpElem.useRef(null);
+  		var blockProps = wp.blockEditor.useBlockProps({ ref: blockRef, className: isEmbedded ? undefined : "zf-wb-containerWrapper" });
+  		function getElem(selector){
+  			return jQuery(blockRef.current).find(selector);
+  		}
+  		if(isEmbedded){
+  			return wpCreateElem("div", blockProps, wpCreateElem("iframe", {src: props.attributes.formPerma, width: props.attributes.width, height: props.attributes.height, frameborder:"0", allow : "geolocation;microphone;camera", "aria-label" : props.attributes.formtitle}));
   		}
 		var $ = jQuery;
+		function deleteParam(elem){
+			$(elem).parent().parent("div").remove();
+			var urlParamsDiv = getElem("#urlParamsDiv");
+			var paramsDiv = $(urlParamsDiv).find("div[elname=paramsDiv]");
+			var parmsCount = $(paramsDiv).find("div[eltype=keyValPair]").length;
+			if(parmsCount == 0){
+				getElem("#queryParamsCB").prop("checked",false);
+				getElem("#urlParamsDiv").slideUp();
+			}
+		}
+		function addNewParam(elem){
+			var urlParamsDiv = getElem("#urlParamsDiv");
+			var newParam = $(urlParamsDiv).find("div[elname=paramTemplate]").clone();
+			$(newParam).removeAttr("elname");
+			$(newParam).show();
+			bindParamRow(newParam);
+			$(newParam).insertAfter($(elem).parent().parent("div[eltype=keyValPair]"));
+		}
+		function hideparamError(elem){
+			$(elem).parent("div").removeClass("zf-wb-errorCont");
+			getElem("#paramError").hide();
+		}
+		// Inline onclick strings would resolve against the iframe's window, where these functions don't exist.
+		function bindParamRow(row){
+			$(row).find("input[elname=paramKey]").on("change", function(){ hideparamError(this); });
+			$(row).find("span[elname=deleteParam]").on("click", function(){ deleteParam(this); });
+			$(row).find("span[elname=addParam]").on("click", function(){ addNewParam(this); });
+		}
   		//to go to home 
   		function goToHomeDiv(){
-  			$("#formPermaLinkPasteDiv").hide();
-  			$("#chooseZohoFormDiv").hide();
-  			$("#zfHomeDiv").show();
-  			$("#embedActionsDiv").hide();
+  			getElem("#formPermaLinkPasteDiv").hide();
+  			getElem("#chooseZohoFormDiv").hide();
+  			getElem("#zfHomeDiv").show();
+  			getElem("#embedActionsDiv").hide();
   		}
 
   		//hide perma link error
   		function hideError(){
-  			var permaLinkErrElem = $('#permaLinkError');
+  			var permaLinkErrElem = getElem('#permaLinkError');
   			$(permaLinkErrElem).parent().removeClass("zf-wb-errorCont");
   			$(permaLinkErrElem).hide();
   		}
@@ -75,36 +88,36 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   			showEmbedActionsDiv();
   		}
   		function showEmbedActionsDiv(){
-  			var formName = $("#zf_formslist").val();
+  			var formName = getElem("#zf_formslist").val();
   			if(formName!="-select-"){
-  				$("#embedActionsDiv").show();
+  				getElem("#embedActionsDiv").show();
   			}else{
-  				$("#embedActionsDiv").hide();
+  				getElem("#embedActionsDiv").hide();
   			}
   		}
   		//This function will be called on clicking embed button after choosing form details.
   		function zf_block_embed(){
   			var formPerma='', formTitle = '';
-  			if($("#embedCatogory").val()=="formPerma"){
-	  			formPerma = $("#permalink").val();
+  			if(getElem("#embedCatogory").val()=="formPerma"){
+	  			formPerma = getElem("#permalink").val();
 	  			if(formPerma.length==0){
-	  				var permaLinkErrElem = $('#permaLinkError');
+	  				var permaLinkErrElem = getElem('#permaLinkError');
 	  				$(permaLinkErrElem).parent().addClass("zf-wb-errorCont");
 	  				$(permaLinkErrElem).show();
 	  				return;
 	  			}
   			}else{
-	  			formPerma = $("#zf_formslist").val();
+	  			formPerma = getElem("#zf_formslist").val();
 	  			if(formPerma.length==0 || formPerma =="-select-"){
-	  				var formSelectError = $("#formSelectError");
+	  				var formSelectError = getElem("#formSelectError");
 	  				$(formSelectError).parent().addClass("zf-wb-errorCont");
 	  				$(formSelectError).show();
 	  				return;
 	  			}
-	  			formTitle = $("#zf_formslist").find(":selected").text();
+	  			formTitle = getElem("#zf_formslist").find(":selected").text();
   			}
-  			var height = $("#formHeight").val();
-  			var width = $("#formWidth").val();
+  			var height = getElem("#formHeight").val();
+  			var width = getElem("#formWidth").val();
   			if(height == ""){
   				height = '600px';
   			}
@@ -112,21 +125,21 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   				width= '100%';
   			}
   			var embedType= "iframe";
-	  		if($("#jsEmbed").is(":checked")){
+	  		if(getElem("#jsEmbed").is(":checked")){
 				embedType ='js';
 			}
 			var autoHeight = false;
-			if($("#autoHeightCB").is(":checked")){
+			if(getElem("#autoHeightCB").is(":checked")){
 				autoHeight =true;
 			}
 			var urlParams = '';
-			if($("#queryParamsCB").is(":checked")){
+			if(getElem("#queryParamsCB").is(":checked")){
 				var hasError = false;
-				var paramsDiv = $("#urlParamsDiv").find("div[elname=paramsDiv]");
+				var paramsDiv = getElem("#urlParamsDiv").find("div[elname=paramsDiv]");
 				$(paramsDiv).find("div[eltype=keyValPair]").each(function(index,elem){
 					var paramKeyRegex = /^[a-zA-Z0-9-_]+$/;
-					var paramKey = $.trim($(elem).find("input[elname=paramKey]").val());
-					var paramVal = $.trim($(elem).find("input[elname=value]").val());
+					var paramKey = String($(elem).find("input[elname=paramKey]").val()).trim();
+					var paramVal = String($(elem).find("input[elname=value]").val()).trim();
 					if(!paramKeyRegex.test(paramKey)){
 						hasError = true;
 						$(elem).find("input[elname=paramKey]").parent("div").addClass("zf-wb-errorCont");
@@ -139,7 +152,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 					}
 				});
 				if(hasError){
-					$("#paramError").show();
+					getElem("#paramError").show();
 					return;
 				}
 			}
@@ -147,37 +160,11 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   		}
   		//form select error
   		function hideFormSelectError(){
-  			var formSelectError = $("#formSelectError");
+  			var formSelectError = getElem("#formSelectError");
   			$(formSelectError).parent().removeClass("zf-wb-errorCont");
   			$(formSelectError).hide();
   		}
-  		/*embed form threw selecting from list
-  		function zf_choose_form_embed(){
-  			var formPerma = $("#zf_formslist").val();
-  			if(formPerma.length==0 || formPerma =="-select-"){
-  				var formSelectError = $("#formSelectError");
-  				$(formSelectError).parent().addClass("zf-wb-errorCont");
-  				$(formSelectError).show();
-  				return;
-  			}
-  			var height = $("#zformHeight").val();
-  			var width = $("#zformWidth").val();
-  			if(height == ""){
-  				height = '600px';
-  			}
-  			if(width == ""){
-  				width= '100%';
-  			}
-  			var embedType= "iframe";
-	  		if($("#jsEmbed").is(":checked")){
-				embedType ='js';
-			}
-			var autoHeight = false;
-			if($("#autoHeightCB").is(":checked")){
-				autoHeight =true;
-			}
-  			saveShortCode(formPerma,width,height,embedType,autoHeight);
-  		}*/
+
 
   		//saving shotcode and rendering the form
   		function saveShortCode(formPerma,width,height,embedType,autoHeight,urlParams, formTitle){
@@ -191,74 +178,74 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   			props.setAttributes({type:embedType});
   			props.setAttributes({autoheight:autoHeight});
   			props.setAttributes({formtitle:formTitle});
-  			$("#formPermaLinkPasteDiv").hide();
-  			$("#blockEditShortCodeDiv").html(iframe);
-  			$("#blockEditShortCodeDiv").show();
+  			getElem("#formPermaLinkPasteDiv").hide();
+  			getElem("#blockEditShortCodeDiv").html(iframe);
+  			getElem("#blockEditShortCodeDiv").show();
   		}
   		//while choosing embed form threw perma url
   		function embedPerma(){
   			hideError();
-  			$("#zfHomeDiv").hide();
-			$("#chooseZohoFormDiv").hide();
-  			$("#formPermaLinkPasteDiv").show();
-  			$("#permalink").focus();
-  			$("#embedActionsDiv").show();
-  			$("#embedCatogory").val("formPerma");
+  			getElem("#zfHomeDiv").hide();
+			getElem("#chooseZohoFormDiv").hide();
+  			getElem("#formPermaLinkPasteDiv").show();
+  			getElem("#permalink").focus();
+  			getElem("#embedActionsDiv").show();
+  			getElem("#embedCatogory").val("formPerma");
   		}
   		//while choosing embed form threw formslist
   		function chooseForm(){
-  			$("#embedCatogory").val("formSelect");
-  			$("#embedActionsDiv").hide();
+  			getElem("#embedCatogory").val("formSelect");
+  			getElem("#embedActionsDiv").hide();
   			hideFormSelectError();
   			hideDomainError();
-  			$("#zfHomeDiv").hide();
-  			$("#formPermaLinkPasteDiv").hide();
-  			$("#chooseZohoFormDiv").show();
+  			getElem("#zfHomeDiv").hide();
+  			getElem("#formPermaLinkPasteDiv").hide();
+  			getElem("#chooseZohoFormDiv").show();
   			if(typeof a =="undefined" || a == ""){
-				$("#zDomaindiv").show();
-		  		$("#zFormSelectDiv").hide();	
-		  		$("#zfRefreshDiv").hide();
-	  			$("#zfCreateFormDiv").hide();
+				getElem("#zDomaindiv").show();
+		  		getElem("#zFormSelectDiv").hide();	
+		  		getElem("#zfRefreshDiv").hide();
+	  			getElem("#zfCreateFormDiv").hide();
   			}
   			showEmbedActionsDiv();
   		}
   		//Getting zoho forms and adding to list
   		function getZohoForms(){
-  			$("#zfRefreshDiv").hide();
+  			getElem("#zfRefreshDiv").hide();
   			var newScript = document.createElement("script");
 			var inlineScript = document.createTextNode("var a='';");
 			newScript.appendChild(inlineScript); 
 			document.getElementsByTagName("head")[0].appendChild(newScript);
-  			var domain = $("#zf_domain").val();
+  			var domain = getElem("#zf_domain").val();
   			if(domain != undefined && domain.length != 0 && domain != "-select-"){
 	  			var zohoFormsURL = getZohoFormsURL(domain);
 	  			resetFormsList();
 	  			if(zohoFormsURL != ""){
-	  				$("#zDomaindiv").hide();
+	  				getElem("#zDomaindiv").hide();
 	  				getZohoFormsList(zohoFormsURL);
 	  			}else{
-	  				$("#zFormSelectDiv").hide();
-	  				//$("#zFsigninDiv").hide();
-	  				$("#zfRefreshDiv").hide();
-	  				$("#zfCreateFormDiv").hide();
+	  				getElem("#zFormSelectDiv").hide();
+	  				//getElem("#zFsigninDiv").hide();
+	  				getElem("#zfRefreshDiv").hide();
+	  				getElem("#zfCreateFormDiv").hide();
 	  			}
   			}else{
-  				var domainError = $("#domainErr");
+  				var domainError = getElem("#domainErr");
   				$(domainError).parent().addClass("zf-wb-errorCont");
   				$(domainError).show();
   			}
   		}
   		//hide Domain Error
   		function hideDomainError(){
-  			var domainError = $("#domainErr");
+  			var domainError = getElem("#domainErr");
   			$(domainError).parent().removeClass("zf-wb-errorCont");
   			$(domainError).hide();
   		}
   		//reset forms list
   		function resetFormsList(){
   			hideFormSelectError();
-  			$('#zf_formslist').find('option').remove();
-  			$('#zf_formslist').append("<option value='-select-'>-Select-</option>");
+  			getElem('#zf_formslist').find('option').remove();
+  			getElem('#zf_formslist').append("<option value='-select-'>-Select-</option>");
   		}
   		//constructing url based on domain extention
   		function getZohoFormsURL(domain){
@@ -275,46 +262,44 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   		//calling api and adding to dropdown
   		function getZohoFormsList(formsUrl){
   			var apiURL = formsUrl+"/api/getforms?type=plugin";
-  			$("#loadingDiv").show();
+  			getElem("#loadingDiv").show();
   			getFormsAndIncludeScript(apiURL,addToFormListDropDown);
   		}
   		function showiframeOrJsChange(){
-  			if($("#jsEmbed").is(":checked")){
-				$("#autoHeightDiv").slideDown();
+  			if(getElem("#jsEmbed").is(":checked")){
+				getElem("#autoHeightDiv").slideDown();
 			}else{
-				$("#autoHeightDiv").slideUp();
+				getElem("#autoHeightDiv").slideUp();
 			}
-			$("#autoHeightCB").prop("checked",false);
-			$("#formHeight").removeProp("disabled");
-			$("#formHeight").prop("placeholder","600px");
+			getElem("#autoHeightCB").prop("checked",false);
+			getElem("#formHeight").prop("disabled",false);
+			getElem("#formHeight").prop("placeholder","600px");
   		}
   		function showOrHideUrlParamsDiv(){
-  			$("#paramError").hide();
-  			if($("#queryParamsCB").is(":checked")){
-  				var urlParamsDiv = $("#urlParamsDiv");
+  			getElem("#paramError").hide();
+  			if(getElem("#queryParamsCB").is(":checked")){
+  				var urlParamsDiv = getElem("#urlParamsDiv");
 				var paramsDiv = $(urlParamsDiv).find("div[elname=paramsDiv]");
 				$(paramsDiv).empty();
 				var newParam = $(urlParamsDiv).find("div[elname=paramTemplate]").clone();
 				$(newParam).removeAttr("elname");
-				$(newParam).find("input[elname=paramKey]").attr("onChange","hideparamError(this)");
-				$(newParam).find("span[elname=deleteParam]").attr("onclick","deleteParam(this)");
-				$(newParam).find("span[elname=addParam]").attr("onclick","addNewParam(this)");
+				bindParamRow(newParam);
 				$(newParam).show();
 				$(paramsDiv).append($(newParam));
 				$(urlParamsDiv).slideDown();
 			}else{
-				$("#urlParamsDiv").hide();
+				getElem("#urlParamsDiv").hide();
 			}
   		}
 
 		function disableOrEnableHeight(){
-			if($("#autoHeightCB").is(":checked")){
-				$("#formHeight").prop("disabled",true);
-				$("#formHeight").prop("placeholder","");
-				$("#formHeight").val('');
+			if(getElem("#autoHeightCB").is(":checked")){
+				getElem("#formHeight").prop("disabled",true);
+				getElem("#formHeight").prop("placeholder","");
+				getElem("#formHeight").val('');
 			}else{
-				$("#formHeight").removeProp("disabled");
-				$("#formHeight").prop("placeholder","600px");
+				getElem("#formHeight").prop("disabled",false);
+				getElem("#formHeight").prop("placeholder","600px");
 			}
 		}
   		
@@ -348,38 +333,38 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 		    document.getElementsByTagName("head")[0].appendChild(script);	
 		}
   		function addToFormListDropDown(){
-  			$("#zfRefreshDiv").hide();
-  			$("#zfCreateFormDiv").hide();
+  			getElem("#zfRefreshDiv").hide();
+  			getElem("#zfCreateFormDiv").hide();
   			if(a!=""){
   				var len = a.forms.length;
   				if(len == 0){
-  					$("#zfCreateFormDiv").show();
-  					$("#zFormSelectDiv").hide();
+  					getElem("#zfCreateFormDiv").show();
+  					getElem("#zFormSelectDiv").hide();
   				}else{
-	  				var formList =document.getElementById("zf_formslist");
-	  				for(i = 0; i < len;i++){
-	  					var option = document.createElement("option");
+	  				var formList = getElem("#zf_formslist")[0];
+	  				for(var i = 0; i < len;i++){
+	  					var option = formList.ownerDocument.createElement("option");
 						option.text = a.forms[i].display_name;
 						option.value = a.forms[i].public_url;
 						formList.options.add(option);
 	  				}
-	  				$("#zFormSelectDiv").show();
-	  				$("#embedActionsDiv").show();
+	  				getElem("#zFormSelectDiv").show();
+	  				getElem("#embedActionsDiv").show();
   				}
   			}else{
-  				$("#zFormSelectDiv").hide();
+  				getElem("#zFormSelectDiv").hide();
   				openSigninOrCreateForm();
   			}
-  			$("#loadingDiv").hide();
+  			getElem("#loadingDiv").hide();
   		}
   		//Redirecting for  signIn or create Form and loading refresh.
   		function openSigninOrCreateForm(){
-  			var domain = $("#zf_domain").val();
+  			var domain = getElem("#zf_domain").val();
   			var zohoFormsURL = getZohoFormsURL(domain);
   			if(zohoFormsURL !=""){
   				window.open(zohoFormsURL);
-  				$("#zfCreateFormDiv").hide();
-  				$("#zfRefreshDiv").show();
+  				getElem("#zfCreateFormDiv").hide();
+  				getElem("#zfRefreshDiv").show();
   			}
   		}
   		/*
@@ -573,7 +558,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
 								  name: "embedType",
 								  onClick: showiframeOrJsChange,
 								  value: "iframe",
-								  checked: true
+								  defaultChecked: true
 								},),
 								wpCreateElem("label", {
 								  for: "iframeEmbed"
@@ -749,9 +734,7 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
     								wpCreateElem("div",{class:"zf-wb-Fotter"},wpCreateElem("button",{class:"zf-wb-blue", onClick: zf_block_embed},"Embed"))
 							);
   		return wpCreateElem("div", 
-	  				{
-	  					class: "zf-wb-containerWrapper"
-	  				},
+	  				blockProps,
 	  				wpCreateElem("link", 
 	  					{
 	  						href: zohoFormsBlock.blockCSS,
@@ -781,6 +764,14 @@ wp.blocks.registerBlockType('zoho/zoho-forms',{
   				);
   	}, //End of edit function
   	save:function(props){
-  		return wpCreateElem("div", null, props.attributes.zf_short_code)
-  	} //End of save function
+  		return wpCreateElem("div", wp.blockEditor.useBlockProps.save(), props.attributes.zf_short_code)
+  	}, //End of save function
+  	deprecated: [
+  		{
+  			attributes: zohoFormsAttributes,
+  			save: function(props){
+  				return wpCreateElem("div", null, props.attributes.zf_short_code)
+  			}
+  		}
+  	]
 })
