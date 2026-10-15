@@ -4,13 +4,13 @@
 Plugin Name:Zoho Forms 
 Plugin URI: http://wordpress.org/extend/plugins/zohoforms
 Description: Try Zoho Forms, the best WordPress contact form plugin! Create contact, payment & custom forms with a drag and drop builder. Get started for free!
-Version: 4.1
+Version: 5.0
 Author: Zoho Forms
 Author URI: https://forms.zoho.com
 */
 
 // Keep in sync with the Version header above.
-define('ZOHO_FORMS_VERSION', '4.1');
+define('ZOHO_FORMS_VERSION', '5.0');
 
 //Shortcode for embeding the form
 
@@ -147,15 +147,28 @@ function add_zohoForms_plugin($plugin_array) {
 //Including block files
 function loadZohoFormsBlockFiles() {
   wp_enqueue_script(
+    'zoho-forms-select2',
+    plugin_dir_url(__FILE__) . 'lib/select2/select2.min.js',
+    array('jquery'),
+    '4.0.13',
+    true
+  );
+  wp_enqueue_script(
     'zoho-forms-block-js',
     plugin_dir_url(__FILE__) . 'zohoforms-block.js',
-    array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-i18n', 'jquery'),
+    array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-i18n', 'jquery', 'zoho-forms-select2'),
     ZOHO_FORMS_VERSION,
     true
   );
   wp_localize_script( 'zoho-forms-block-js', 'zohoFormsBlock', array(
       'blockCSS' => plugin_dir_url(__FILE__) . 'zohoforms-block.css',
-      'favIconPath' => plugin_dir_url(__FILE__) . 'tinymce/zFormsIcon.png'
+      'select2CSS' => plugin_dir_url(__FILE__) . 'lib/select2/select2.min.css',
+      'favIconPath' => plugin_dir_url(__FILE__) . 'images/zFormsIcon.png',
+      'accessFormIcon' => plugin_dir_url(__FILE__) . 'images/access-form.png',
+      'permalinkIcon' => plugin_dir_url(__FILE__) . 'images/icon-link.png',
+      'refreshFormIcon' => plugin_dir_url(__FILE__) . 'images/refresh-form.png',
+      'zohoFormsIcon' => plugin_dir_url(__FILE__) . 'images/zohoforms.png',
+      'completedIcon' => plugin_dir_url(__FILE__) . 'images/completed.png'
     ) );
 }
 

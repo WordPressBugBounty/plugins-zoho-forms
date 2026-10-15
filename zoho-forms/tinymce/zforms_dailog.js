@@ -93,12 +93,19 @@ function zforms_submit()
 	var src='', formTitle = '';
 	var embedType = $("#zf_embedCatogory").val();
 	if(embedType == "formPerma"){
-		var perma_link = document.getElementById("permalink").value;
+		var perma_link = $.trim(document.getElementById("permalink").value);
 		if(perma_link.length==0)
 		{
 			document.getElementById("permaLinkError").style.display="block";
 			document.getElementById("permaLinkError").innerHTML="Please enter your form's public link.";
-			document.getElementById("permaContainer").classList.add("errorCont");
+			document.getElementById("permaContainer").classList.add("zf-wb-errorCont");
+			return;
+		}
+		if(perma_link.toLowerCase().indexOf("https://") !== 0)
+		{
+			document.getElementById("permaLinkError").style.display="block";
+			document.getElementById("permaLinkError").innerHTML="Enter a valid permalink Url";
+			document.getElementById("permaContainer").classList.add("zf-wb-errorCont");
 			return;
 		}
 		src = perma_link;
@@ -108,7 +115,7 @@ function zforms_submit()
 		{		
 			document.getElementById("formSelectionError").style.display="block";		
 			document.getElementById("formSelectionError").innerHTML="Please select a form.";
-			document.getElementById("selctContainer").className= "errorCont";
+			document.getElementById("selctContainer").classList.add("zf-wb-errorCont");
 			return;
 		}
 		src = formName;
@@ -125,7 +132,7 @@ function zforms_submit()
 				var paramVal = $.trim($(elem).find("input[elname=value]").val());
 				if(!paramKeyRegex.test(paramKey)){
 					hasError = true;
-					$(elem).find("input[elname=paramKey]").parent("div").addClass("errorCont");
+					$(elem).find("input[elname=paramKey]").parent("div").addClass("zf-wb-errorCont");
 				}
 				if(paramKey!='' && paramVal!=''){
 					if(urlParams!=''){
@@ -139,15 +146,21 @@ function zforms_submit()
 				return;
 			}
 		}
-		var formWidth = document.getElementById('width');
+		var formWidth = document.getElementById('formWidth');
+		var widthUnit = $("#formWidth").closest(".embedInputCont").find("i.selected").attr("size_symbol") || "%";
 		if(formWidth.value=="")
 		{
-			formWidth.value="100%";
+			formWidth.value="100"+widthUnit;
+		}else if(!/(px|%)$/.test(formWidth.value)){
+			formWidth.value=formWidth.value+widthUnit;
 		}
-		var formHeight = document.getElementById('height');
+		var formHeight = document.getElementById('formHeight');
+		var heightUnit = $("#formHeight").closest(".embedInputCont").find("i").attr("size_symbol") || "px";
 		if(formHeight.value=="")
 		{
-			formHeight.value="600px";
+			formHeight.value="600"+heightUnit;
+		}else if(!/(px|%)$/.test(formHeight.value)){
+			formHeight.value=formHeight.value+heightUnit;
 		}
 		//insertContent(urlBuild,formWidth.value,formHeight.value);
 		var tag = '[zohoForms src=';
@@ -169,10 +182,8 @@ function zforms_submit()
 		if(urlParams !=''){
 			tag +=' urlparams="'+urlParams+'"';
 		}
-		if($("#jsEmbed").is(":checked")){
-			tag +=' type=js';
-		}
-		if($("#autoHeightCB").is(":checked")){
+		tag +=' type=js';
+		if(!$("#autoHeightCB").is(":checked")){
 			tag +=' autoheight=true'
 		}
 		tag += '/]';
@@ -202,6 +213,44 @@ function goToHome(){
 	$("#permaLinkDiv").hide();
 	$("#chooseFormDiv").hide();
 	$("#embedActionsDiv").hide();
+	selectMappingStep("choose");
+}
+
+function selectMappingStep(step){
+	if(step == "embed"){
+		$("#chooseFormStep").addClass("is-selected");
+		$("#configureEmbedStep").addClass("is-selected");
+		setStepCompleted("#chooseFormStep", true);
+		setStepCompleted("#configureEmbedStep", false);
+	}else{
+		$("#configureEmbedStep").removeClass("is-selected");
+		$("#chooseFormStep").addClass("is-selected");
+		setStepCompleted("#chooseFormStep", false);
+		setStepCompleted("#configureEmbedStep", false);
+	}
+}
+function setStepCompleted(stepSelector, completed){
+	var $step = $(stepSelector);
+	if(completed){
+		$step.find("span[elname=stepNumber]").hide();
+		$step.find("span[elname=tickIcon]").css("display", "");
+	}else{
+		$step.find("span[elname=stepNumber]").css("display", "");
+		$step.find("span[elname=tickIcon]").hide();
+	}
+}
+
+function selectConnectionCard(card){
+	$("#accessZohoFormsCard, #embedUsingPermalinkCard").removeClass("selected");
+	$(card).addClass("selected");
+}
+
+function proceedFromHome(){
+	if($("#accessZohoFormsCard").hasClass("selected")){
+		showChooseFormDiv();
+	}else if($("#embedUsingPermalinkCard").hasClass("selected")){
+		embedPerma();
+	}
 }			
 			
 function embedPerma()
@@ -209,31 +258,28 @@ function embedPerma()
 	$("#zf_tiny_homeDiv").hide();
 	$("#zf_embedCatogory").val("formPerma");
 	$("#permaLinkDiv").show();
+	$("#formSelectionDiv").hide();
 	$("#embedActionsDiv").show();
-	if(document.getElementById("permaContainer").classList.contains("errorCont"))
+	if(document.getElementById("permaContainer").classList.contains("zf-wb-errorCont"))
 	{
-		document.getElementById("permaContainer").classList.remove("errorCont");
+		document.getElementById("permaContainer").classList.remove("zf-wb-errorCont");
 		document.getElementById("permaLinkError").style.display="none";
 	}
 	//document.getElementById("publicLink").className= "selected";
 	//document.getElementById("permaLinkDiv").style.display="block";
 	document.getElementById("chooseFormDiv").style.display= "none";
-	//document.getElementById("selectForm").classList.remove("selected");
-	
+	selectMappingStep("embed");
 }
 		
-function signin()
-{				
-	if(window.tinyMCE)
-	{
-		var domainValue = $("#zForm_domain").val();
-		var formsUrl = getZohoURL(domainValue);
-		if(formsUrl !=""){
-			window.open(formsUrl+"/forms/login.html");
-			document.getElementById("refreshDiv").style.display="block";
-			document.getElementById("signinDiv").style.display="none";
-		}
-	}				
+var signInTabOpened = false;
+function openSignInTab(formsUrl){
+	if(!signInTabOpened && formsUrl !=""){
+		signInTabOpened = true;
+		window.open(formsUrl);
+	}
+	$("#zDomaindiv").hide();
+	$("#zfCreateFormDiv").hide();
+	document.getElementById("zfRefreshDiv").style.display="flex";
 }
 function appendScript()
 {
@@ -258,34 +304,48 @@ function showChooseFormDiv()
 {
 	$("#zf_tiny_homeDiv").hide();
 	$("#zf_embedCatogory").val("formSelect");
-	//document.getElementById("selectForm").classList.add("selected");
-	document.getElementById("chooseFormDiv").style.display="block";
 	document.getElementById("permaLinkDiv").style.display= "none";
-	//document.getElementById("publicLink").className= "none";
+	if(a!="" && a.forms && a.forms.length > 0){
+		$("#chooseFormDiv").hide();
+		$("#formSelectionDiv").show();
+		$("#embedActionsDiv").show();
+		selectMappingStep("embed");
+		return;
+	}
+	document.getElementById("chooseFormDiv").style.display="block";
 	showEmbedActionsDiv();
 }
 
 function proceedToSelectFormOnTinyMce(){
-	var domainValue = $("#zForm_domain").val();
+	var domainValue = $("#zf_domain").val();
 	if(domainValue == "-select-"){
-		$("#domainSelectionErr").show();
-		$("#domainSelectionDiv").addClass("errorCont");
+		$("#domainErr").show();
+		$("#zDomaindiv").addClass("zf-wb-errorCont");
 		return;
 	}
 	var formsUrl = getZohoFormsURL(domainValue);
 	if(formsUrl !=""){
+		signInTabOpened = false;
+		var refreshVisible = $("#zfRefreshDiv").is(":visible");
+		var loaderElem = refreshVisible ? $("#refreshLoadingImgElem") : $("#connectLoadingImgElem");
+		loaderElem.show();
 		getZohoFormsLisOnTinyMce(formsUrl);
-		$("#domainSelectionDiv").hide();
-		$("#refreshDiv").hide();
-		$("#loadingDiv").show();
 		setTimeout(function() {
-    		$("#loadingDiv").hide();
+    		loaderElem.hide();
     		if(a==""){
-				$("#signinDiv").show();
-			}else if(a.forms.length == 0){
-				$("#createFormDiv").show();
+				openSignInTab(formsUrl);
+				return;
+			}
+    		$("#zDomaindiv").hide();
+    		$("#zfRefreshDiv").hide();
+    		if(a.forms.length == 0){
+				$("#zfCreateFormDiv").show();
 			}else{
+				$("#chooseFormDiv").hide();
+				$("#permaLinkDiv").hide();
 				$("#formSelectionDiv").show();
+				$("#embedActionsDiv").show();
+				selectMappingStep("embed");
 			}
 			
 		}, 2000);
@@ -293,7 +353,6 @@ function proceedToSelectFormOnTinyMce(){
 }
 function getZohoFormsLisOnTinyMce(formsUrl){
   			var apiURL = formsUrl+"/api/getforms?type=plugin";
-  			$("#loadingDiv").show();
   			getFormsAndIncludeScriptOnTinyMce(apiURL,addToFormListDropDown);
   		}
 
@@ -309,8 +368,17 @@ function getZohoFormsLisOnTinyMce(formsUrl){
 						option.value = a.forms[i].public_url;
 						formList.options.add(option);
 	  				}
-	  				$("#zFormSelectDiv").show();
+	  				if($("#formname").data("select2")){
+	  					$("#formname").trigger("change.select2");
+	  				}
+	  				$("#chooseFormDiv").hide();
+	  				$("#permaLinkDiv").hide();
+	  				$("#formSelectionDiv").show();
+	  				$("#embedActionsDiv").show();
+	  				selectMappingStep("embed");
   				}
+  			}else{
+  				openSignInTab(getZohoFormsURL($("#zf_domain").val()));
   			}
   		}
   		function getFormsAndIncludeScriptOnTinyMce(url,callback)
@@ -368,20 +436,20 @@ function getZohoURL(domain){
   	}
 }
 function hideDomainSelctError(){
-	$("#domainSelectionDiv").removeClass("errorCont");
-	$("#domainSelectionErr").hide();
+	$("#zDomaindiv").removeClass("zf-wb-errorCont");
+	$("#domainErr").hide();
 }
 
 function hideError()
 {
-	if(document.getElementById("permaContainer").classList.contains("errorCont"))
+	if(document.getElementById("permaContainer").classList.contains("zf-wb-errorCont"))
 	{
-		document.getElementById("permaContainer").classList.remove("errorCont");
+		document.getElementById("permaContainer").classList.remove("zf-wb-errorCont");
 		document.getElementById("permaLinkError").style.display="none";
 	}
-	if(document.getElementById("selctContainer").classList.contains("errorCont")){
+	if(document.getElementById("selctContainer").classList.contains("zf-wb-errorCont")){
 		document.getElementById("formSelectionError").style.display="none";
-		document.getElementById("selctContainer").classList.remove("errorCont");
+		document.getElementById("selctContainer").classList.remove("zf-wb-errorCont");
 	}
 }
 
@@ -390,9 +458,9 @@ function hideError()
 function selectForm()
 {
 	document.getElementById("selectForm").classList.add("selected");
-	if(document.getElementById("selctContainer").classList.contains("errorCont"))
+	if(document.getElementById("selctContainer").classList.contains("zf-wb-errorCont"))
 	{
-		document.getElementById("selctContainer").classList.remove("errorCont");
+		document.getElementById("selctContainer").classList.remove("zf-wb-errorCont");
 		document.getElementById("formSelectionError").style.display="none";
 	}
 		
@@ -400,26 +468,22 @@ function selectForm()
 	{
 		if(a.forms.length==0)
 		{
-			document.getElementById("createFormDiv").style.display="block";
+			document.getElementById("zfCreateFormDiv").style.display="block";
 			document.getElementById("chooseFormDiv").style.display="none";
-			document.getElementById("signinDiv").style.display="none";
 		}
 		else
 		{
 			document.getElementById("chooseFormDiv").style.display="block";
-			document.getElementById("signinDiv").style.display="none";
 		}	
 	}
 	else
-	{	
-		
-		document.getElementById("signinDiv").style.display="block";
-
-
-				
+	{
+		openSignInTab(getZohoFormsURL($("#zf_domain").val()));
 	}
 	document.getElementById("permaLinkDiv").style.display= "none";
-	document.getElementById("refreshDiv").style.display="none";
+	if(a!=""){
+		document.getElementById("zfRefreshDiv").style.display="none";
+	}
 	document.getElementById("publicLink").className= "none";
 }
 		
@@ -435,13 +499,12 @@ function refresh()
 
 function createForm()
 {
-	var domainValue = $("#zForm_domain").val();
+	var domainValue = $("#zf_domain").val();
 	var formsUrl = getZohoFormsURL(domainValue);
 	if(formsUrl !=""){
 		window.open(formsUrl);	
-		document.getElementById("refreshDiv").style.display="block";	
-		document.getElementById("createFormDiv").style.display="none";
-		document.getElementById("signinDiv").style.display="none";
+		document.getElementById("zfRefreshDiv").style.display="flex";	
+		document.getElementById("zfCreateFormDiv").style.display="none";
 	}
 }
 
@@ -453,7 +516,7 @@ function showOrHideUrlParamsDiv(){
 		$(paramsDiv).empty();
 		var newParam = $(urlParamsDiv).find("div[elname=paramTemplate]").clone();
 		$(newParam).removeAttr("elname");
-		$(newParam).show();
+		$(newParam).css("display", "");
 		$(paramsDiv).append($(newParam));
 		$(urlParamsDiv).slideDown();
 	}else{
@@ -464,21 +527,10 @@ function addUrlParam(elem){
 	var urlParamsDiv = $("#urlParamsDiv");
 	var newParam = $(urlParamsDiv).find("div[elname=paramTemplate]").clone();
 	$(newParam).removeAttr("elname");
-	$(newParam).show();
+	$(newParam).css("display", "");
 	$(newParam).insertAfter($(elem).parent().parent("div[eltype=keyValPair]"));
 }
 
-function showiframeOrJsChange(){
-	if($("#jsEmbed").is(":checked")){
-		$("#autoHeightDiv").slideDown();
-	}else{
-		$("#autoHeightDiv").slideUp();
-	}
-	$("#autoHeightCB").prop("checked",false);
-	$("#height").removeProp("disabled");
-	$("#height").val("600px");
-
-}
 function deleteParam(elem){
 	$(elem).parent().parent("div").remove();
 	var urlParamsDiv = $("#urlParamsDiv");
@@ -493,22 +545,75 @@ function showEmbedActionsDiv(){
 	var formname = $("#formname").val();
 	if(formname !="-Select-"){
 		$("#embedActionsDiv").slideDown();
-	}else{
-		$("#embedActionsDiv").slideUp();
+		selectMappingStep("embed");
 	}
-
+}
+function selectWidthUnit(elem){
+	$(elem).siblings("i").removeClass("selected");
+	$(elem).addClass("selected");
+}
+function allowOnlyNumbers(elem){
+	var value = elem.value.replace(/[^0-9]/g, "");
+	if(elem.value !== value){
+		elem.value = value;
+	}
 }
 function disableHeight(){
 	if($("#autoHeightCB").is(":checked")){
-		$("#height").prop("disabled",true);
-		$("#height").val('');
+		$("#formHeightDiv").css("display", "");
 	}else{
-		$("#height").removeProp("disabled");
-		$("#height").val('600px');
+		$("#formHeightDiv").hide();
 	}
 }
 
 function hideparamError(elem){
-	$(elem).parent("div").removeClass("errorCont");
+	$(elem).parent("div").removeClass("zf-wb-errorCont");
 	$("#paramError").hide();
 }
+
+jQuery(function(){
+	/*setTimeout(function(){
+		if(!window.tinyMCEPopup || !tinyMCEPopup.uiWindow || !url){
+			return;
+		}
+		var titleEl = tinyMCEPopup.uiWindow.getEl("title");
+		if(!titleEl || titleEl.getElementsByTagName("img").length){
+			return;
+		}
+		var icon = titleEl.ownerDocument.createElement("img");
+		icon.src = url + "/../images/zohoforms.png";
+		icon.alt = "";
+		icon.style.width = "18px";
+		icon.style.height = "18px";
+		icon.style.marginRight = "8px";
+		icon.style.verticalAlign = "middle";
+		titleEl.insertBefore(icon, titleEl.firstChild);
+	}, 0);*/
+	function setupSelect(selector, onChange){
+		var $el = jQuery(selector);
+		if(!$el.length || !jQuery.fn.select2 || $el.data("select2")){
+			return;
+		}
+		$el.select2({
+			width: "100%",
+			dropdownParent: jQuery(".zf-WpPopupContainer"),
+			minimumResultsForSearch: Infinity
+		});
+		if(onChange){
+			$el.on("change.zfSelect2", onChange);
+		}
+	}
+	setupSelect("#zf_domain", hideDomainSelctError);
+	setupSelect("#formname");
+	jQuery(document).on("mousedown.zfSelect2", function(event){
+		if(jQuery(event.target).closest(".select2-container").length){
+			return;
+		}
+		jQuery("#zf_domain, #formname").each(function(){
+			var $el = jQuery(this);
+			if($el.data("select2")){
+				$el.select2("close");
+			}
+		});
+	});
+});

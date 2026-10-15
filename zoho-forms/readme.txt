@@ -4,8 +4,8 @@ Contributors: zoho
 Donate link: https://www.zoho.com/
 Tags: contact form, form builder, custom form, forms, form plugin
 Requires at least: 2.8
-Tested up to: 7.1
-Stable tag: 4.1
+Tested up to: 7.1.3
+Stable tag: 5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -229,10 +229,14 @@ To customize the appearance of your form on a WordPress page, go to the Themes t
 
 == Changelog ==
 
+= 5.0 =
+
+* Refreshed the Zoho Forms plugin with a new look for embedding forms.
+
 = 4.1 =
 
 * Upgraded the Zoho Forms block to Block API version 3 for compatibility with the iframe-based block editor.
-
+* Fixed the Zoho Forms block not working in the block editor from WordPress 7.1.
 = 4.0.4 =
 
 * Enhanced iframe and JavaScript code of forms with required browser permissions and WCAG attributes.
@@ -291,10 +295,6 @@ To customize the appearance of your form on a WordPress page, go to the Themes t
 
 == Upgrade Notice ==
 
-= 4.1 =
+= 5.0 =
 
-* Required for WordPress 7.1 and later: the Zoho Forms block now supports the iframe-based block editor (Block API version 3).
-
-= 4.0.4 =
-
-* Enhanced iframe and JavaScript code of forms with required browser permissions and WCAG attributes.
+* Refreshed the Zoho Forms plugin with a new look for embedding forms.

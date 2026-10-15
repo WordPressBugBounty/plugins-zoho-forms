@@ -1,0 +1,81 @@
+/* Zforms Dialog Css Start */
+body {
+    margin: 0;
+    background: #fff;
+}
+.connFormCont {
+    border: none;
+    height: 568px;
+    display: flex;
+    flex-flow: column;
+}
+.zf-wb-outerWrapper {
+    /* height: 100%; */
+}
+#chooseFormDiv {
+    height: 100%;
+}
+
+.connFormInnCont {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+.embedActionsDiv {
+    height: 471px;
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+}
+.connFormHeader {
+    padding: 11px 16px;
+}
+.zconnectMainCont {
+    padding: 24px 32px;
+    min-height: 290px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.zf-WpPopupContainer {
+    position: relative;
+    background: #fff;
+    width: 100%;
+    height: 100%;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    display: block;
+    letter-spacing: 0.3px;
+}
+.connFormHeader h4 {
+    margin-left: 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.zf-WpMainWrap {
+
+    /* height: 540px;
+    overflow-y: scroll;
+    overflow-x: hidden; */
+
+}
+.embedFiel_Col1 {
+    width: 220px;
+}
+.embedFiel_Col2 {
+    width: 220px;
+}
+.zf-wb-outerWrapper .zf-wb-innerWrapper textarea {
+    margin-bottom: 10px;
+}
+.connFormHeader i {
+    width: 22px;
+    height: 22px;
+}
+.connFormHeader i img {
+    width: 22px;
+    height: 22px;
+}
+/* Zforms Dialog Css End */

@@ -406,35 +406,10 @@ box-sizing: border-box;
     float: left;
     padding: 0 20px;
 }
-.intArrow {
-    border-bottom: 1px dashed #afafaf;
-    font-size: 13px;
-    font-weight: 300;
-    width: 75px;
-    position: relative;
-    margin-left: 15px;
-    margin-right: 15px;
-    display: inline-block;
-    float: left;
-    vertical-align: middle;
-    top: 15px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-.intArrow .arrowImg {
-    background: url(paramtrArrow.jpg) no-repeat;
-   width: 5px;
-    height: 10px;
-    display: block;
-    top: -4px;
-    position: absolute;
-    right: 0;
-    opacity: 0.8;
-}
 .fiedPropPlus, .fiedPropMinus{ 
    width: 24px;
    height: 24px;
-   background: url(fieldprop-plus.png) no-repeat; 
+   background: url(../images/fieldprop-plus.png) no-repeat; 
    background-size: contain;
    margin-top: 2px; 
    float: left; cursor: pointer; 
@@ -442,7 +417,7 @@ box-sizing: border-box;
    left: 0px !important;
 }
 .fiedPropMinus {
-    background: url(fieldprop-minus.png) no-repeat; background-size: contain;
+    background: url(../images/fieldprop-minus.png) no-repeat; background-size: contain;
     margin-left: 8px;
 }
 

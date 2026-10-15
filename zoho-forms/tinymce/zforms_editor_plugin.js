@@ -16,7 +16,7 @@
             ed.addButton('zohoForms', {  
                 title : 'Zoho Forms',
 		cmd : 'zforms_embed_window',  
-                image : url+'/zohoforms.png', 				
+                image : url+'/../images/zohoforms.png', 				
             });
 			return false;
         }
