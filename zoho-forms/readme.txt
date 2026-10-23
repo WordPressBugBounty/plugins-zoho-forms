@@ -129,11 +129,11 @@ Here's a step-by-step guide that will help you configure Zoho Forms for Wordpres
 
 1. Sign up or log in to your [Zoho Forms](http://forms.zoho.com) account and create a form that suits your requirements.
 2. To add your Zoho Form to a WordPress page or post, click the <strong>+ (Block Inserter)</strong> icon in the top left corner of your screen. In the search bar, type <strong>Zoho Forms</strong> and select the block from the search results.
-3. Once the plugin is added, click <strong>Access Zoho Forms</strong> to select an existing form or choose <strong>Embed using permalink</strong> to enter the [form’s permalink](https://help.zoho.com/portal/en/kb/forms/sharing-forms/articles/sharing-a-form-publicly#Sharing_a_link).
-4. After selecting your form, you'll see two embedding options: <strong>iFrame</strong> or <strong>JavaScript</strong>.
-5. If you choose the iFrame option, you can customize the form container's width and height.
-6. If you select the JavaScript option, the form container's width can be set manually, while the height will automatically adjust based on the number of form fields.
-7. In the end, you can also add <strong>parameters</strong> to your form's URL to track form submissions or prefill form fields. [Click here](https://help.zoho.com/portal/en/kb/forms/form-settings/prefill/articles/field-alias#What_is_prefilling_form_fields) to learn more about the URL parameters in Zoho Forms.
+3. Once the block is added, the Zoho Forms dialog opens. Under <strong>Choose a way to embed your form</strong>, click <strong>Access Zoho Forms</strong> to choose a form from your Zoho Forms account, or <strong>Use a Permalink</strong> to embed a form using its [permalink](https://help.zoho.com/portal/en/kb/forms/sharing-forms/articles/sharing-a-form-publicly#Sharing_a_link) without signing in. Then click <strong>Next</strong>.
+4. If you chose Access Zoho Forms, select the domain your Zoho account is registered on and click <strong>Connect</strong>. Sign in on the Zoho page, come back to WordPress, click <strong>Refresh</strong> to load your forms, and then choose your form from the <strong>Choose a form</strong> list. If you chose Use a Permalink, enter your form’s permalink in the field provided.
+5. After choosing your form, set the width of the form container in <strong>px</strong> or <strong>%</strong>. The height adjusts automatically based on the number of form fields. To set a fixed height instead, select <strong>Set custom height</strong> and enter the height in <strong>px</strong>.
+6. In the end, you can also add <strong>parameters</strong> to your form’s URL to track form submissions or prefill form fields. [Click here](https://help.zoho.com/portal/en/kb/forms/form-settings/prefill/articles/field-alias#What_is_prefilling_form_fields) to learn more about the URL parameters in Zoho Forms.
+7. You can preview your form directly in the WordPress editor and publish it once the changes are finalized.
 
 = Embedding forms in Wordpress using Shortcode =
 
@@ -219,13 +219,16 @@ To customize the appearance of your form on a WordPress page, go to the Themes t
 
 == Screenshots ==
 
-1. Search for <strong>Zoho Forms</strong> in the plugin search bar and then click on <strong>Install Now</strong> and <strong>Activate</strong> the plugin.
+1. Search for <strong>Zoho Forms</strong> in the plugin search bar and then click on plugin and click <strong>Install and Activate</strong> button.
 2. You can then find Zoho Forms under the <strong>Installed Plugins</strong> section.
 3. Click the <strong>+ (Block Inserter)</strong> icon in the top left corner of your screen. In the search bar, type Zoho Forms and select the block from the search results.
-4. Once the block is added, click <strong>Access Zoho Forms</strong> to log in to Zoho Forms account and choose an existing form.
-5. You can also embed your form using the <strong>permalink URL</strong> without signing in.
-6. You can preview your form directly in the WordPress Editor and publish it once the changes are finalized.
-
+4. Once the block is added, the Zoho Forms dialog opens. Click <strong>Access Zoho Forms</strong> to choose a form from your Zoho Forms account. Then click <strong>Next</strong>.
+5. Select the domain your Zoho account is registered on and click <strong>Connect</strong>.
+6. Sign in on the Zoho page, come back to WordPress, click <strong>Refresh</strong> to load your forms, and then choose your form from the <strong>Choose a form</strong> list.
+7. Set the width of the form container in <strong>px</strong> or <strong>%</strong>. The height adjusts automatically based on the number of form fields. To set a fixed height instead, select <strong>Set custom height</strong> and enter the height in <strong>px</strong>. You can also add <strong>parameters</strong> to your form’s URL to track form submissions or prefill form fields.
+8. Click <strong>Use a Permalink</strong> to embed a form using its permalink without signing in. Then click <strong>Next</strong>.
+9. Enter your form’s permalink in the field provided and set the width of the form container in <strong>px</strong> or <strong>%</strong>. The height adjusts automatically based on the number of form fields. To set a fixed height instead, select <strong>Set custom height</strong> and enter the height in <strong>px</strong>. You can also add <strong>parameters</strong> to your form’s URL to track form submissions or prefill form fields.
+10. You can preview your form directly in the WordPress Editor and publish it once the changes are finalized.
 
 == Changelog ==
 
